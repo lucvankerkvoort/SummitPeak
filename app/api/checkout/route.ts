@@ -20,22 +20,22 @@ export async function POST(req: NextRequest) {
 
     const lineItems = items.map((item) => {
       const product = getProductById(item.id);
-      if (!product) {
-        throw new Error(`Product not found: ${item.id}`);
+      if (!product) throw new Error(`Product not found: ${item.id}`);
+      if (!product.inStock) throw new Error(`Product out of stock: ${product.name}`);
+
+      // Use pre-created Stripe price ID when available (set via npm run seed-stripe)
+      if (product.stripePriceId) {
+        return { price: product.stripePriceId, quantity: item.quantity };
       }
-      if (!product.inStock) {
-        throw new Error(`Product out of stock: ${product.name}`);
-      }
-      const images = product.image
-        ? [`${baseUrl}${product.image}`]
-        : [];
+
+      // Fallback: inline price_data (works without seeding)
       return {
         price_data: {
           currency: "usd",
           product_data: {
             name: product.name,
             description: product.description,
-            images,
+            images: product.image ? [`${baseUrl}${product.image}`] : [],
           },
           unit_amount: product.price,
         },
@@ -47,6 +47,9 @@ export async function POST(req: NextRequest) {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
+      shipping_address_collection: {
+        allowed_countries: ["US", "CA", "GB", "DE", "FR", "NL", "BE", "AU", "NZ"],
+      },
       success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/cart`,
     });

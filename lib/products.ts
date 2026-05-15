@@ -6,6 +6,7 @@ export interface Product {
   category: string;
   inStock: boolean;
   image?: string; // path relative to /public
+  stripePriceId?: string; // populated after running: npm run seed-stripe
 }
 
 export const products: Product[] = [
