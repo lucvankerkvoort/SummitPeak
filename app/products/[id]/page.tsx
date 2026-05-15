@@ -99,7 +99,7 @@ export default function ProductDetailPage({
             {[
               { label: "Material", value: "Premium PLA Filament" },
               { label: "Layer Resolution", value: "0.1 mm" },
-              { label: "Approximate Size", value: "20 × 20 cm base" },
+              { label: "Approximate Size", value: "10 × 10 cm base" },
               { label: "Weight", value: "~280 g" },
               { label: "Terrain Source", value: "Real elevation data" },
             ].map(({ label, value }) => (
